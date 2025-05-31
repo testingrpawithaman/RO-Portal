@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RO New Development and Modernization Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1a5490 0%, #2c7da0 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info span {
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Navigation Styles */
+        .nav {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .nav-item {
+            padding: 1rem 0;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #1a5490;
+        }
+
+        .nav-item.active {
+            color: #1a5490;
+            border-bottom-color: #1a5490;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a5490;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #1a5490;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #155082;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.draft {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        /* Forms */
+        .form-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 2rem;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a5490;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            background: none;
+            border: none;
+            color: #1a5490;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            color: #155082;
+            background: #f0f2f5;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-content {
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>RO New Development and Modernization Portal</h1>
+            </div>
+            <div class="user-info">
+                <span>Welcome, <strong id="userName">Field Officer</strong></span>
+                <span>|</span>
+                <span id="userRole">Noida DO (1501)</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
+            <div class="nav-item" onclick="showSection('concept-notes')">Concept Notes</div>
+            <div class="nav-item" onclick="showSection('estimates')">Estimates</div>
+            <div class="nav-item" onclick="showSection('roles')">Roles & Authorization</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Pending Concept Notes</h3>
+                    <div class="value">12</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Estimates</h3>
+                    <div class="value">28</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Awaiting Approval</h3>
+                    <div class="value">7</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Completed Projects</h3>
+                    <div class="value">156</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Recent Activities</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>RO ID</th>
+                            <th>Type</th>
+                            <th>Site</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RO-2024-001</td>
+                            <td>Modernization</td>
+                            <td>A Site</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>2024-01-15</td>
+                            <td><button class="action-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>RO-2024-002</td>
+                            <td>New Development</td>
+                            <td>B Site</td>
+                            <td><span class="status approved">Approved</span></td>
+                            <td>2024-01-14</td>
+                            <td><button class="action-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>RO-2024-003</td>
+                            <td>Upgradation</td>
+                            <td>A Site</td>
+                            <td><span class="status draft">Draft</span></td>
+                            <td>2024-01-13</td>
+                            <td><button class="action-btn">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Concept Notes Section -->
+        <section id="concept-notes" class="section">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Concept Notes</h2>
+                    <button class="btn-primary" onclick="showConceptNoteForm()">Create New Concept Note</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concept Note ID</th>
+                            <th>RO Type</th>
+                            <th>Site Type</th>
+                            <th>Division</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CN-2024-001</td>
+                            <td>Modernization</td>
+                            <td>A Site</td>
+                            <td>Noida DO</td>
+                            <td><span class="status pending">Pending Approval</span></td>
+                            <td>2024-01-15</td>
+                            <td>
+                                <button class="action-btn">View</button>
+                                <button class="action-btn">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CN-2024-002</td>
+                            <td>Upgradation</td>
+                            <td>B Site</td>
+                            <td>Bareilly DO</td>
+                            <td><span class="status approved">Approved</span></td>
+                            <td>2024-01-12</td>
+                            <td>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Concept Note Form -->
+            <div id="conceptNoteForm" class="form-container">
+                <h2>Create New Concept Note</h2>
+                <form>
+                    <div class="form-group">
+                        <label>RO Type</label>
+                        <select>
+                            <option>Select Type</option>
+                            <option>Modernization</option>
+                            <option>Upgradation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Site Type</label>
+                        <select>
+                            <option>Select Site</option>
+                            <option>A Site RO</option>
+                            <option>B Site RO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Division</label>
+                        <select>
+                            <option>Select Division</option>
+                            <option>Noida DO (1501)</option>
+                            <option>Bareilly DO (1502)</option>
+                            <option>Agra DO (1504)</option>
+                            <option>Dehradun DO (1505)</option>
+                            <option>Moradabad DO (1506)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>RO Name/Location</label>
+                        <input type="text" placeholder="Enter RO name or location">
+                    </div>
+                    <div class="form-group">
+                        <label>Justification</label>
+                        <textarea placeholder="Enter justification for modernization/upgradation"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Benefits</label>
+                        <textarea placeholder="Enter expected benefits"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="hideConceptNoteForm()">Cancel</button>
+                        <button type="button" class="btn-primary">Save as Draft</button>
+                        <button type="button" class="btn-primary">Submit for Approval</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Estimates Section -->
+        <section id="estimates" class="section">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Estimates</h2>
+                    <button class="btn-primary" onclick="showEstimateForm()">Create New Estimate</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estimate ID</th>
+                            <th>Project Type</th>
+                            <th>Site Type</th>
+                            <th>Division</th>
+                            <th>Amount (₹)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>EST-2024-001</td>
+                            <td>New Development</td>
+                            <td>A Site</td>
+                            <td>Agra DO</td>
+                            <td>45,00,000</td>
+                            <td><span class="status pending">Under Review</span></td>
+                            <td>
+                                <button class="action-btn">View</button>
+                                <button class="action-btn">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EST-2024-002</td>
+                            <td>Modernization</td>
+                            <td>B Site</td>
+                            <td>Dehradun DO</td>
+                            <td>28,50,000</td>
+                            <td><span class="status approved">Approved</span></td>
+                            <td>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estimate Form -->
+            <div id="estimateForm" class="form-container">
+                <h2>Create New Estimate</h2>
+                <form>
+                    <div class="form-group">
+                        <label>Project Type</label>
+                        <select>
+                            <option>Select Type</option>
+                            <option>New Development</option>
+                            <option>Modernization</option>
+                            <option>Upgradation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Site Type</label>
+                        <select>
+                            <option>Select Site</option>
+                            <option>A Site RO</option>
+                            <option>B Site RO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Related Concept Note (if applicable)</label>
+                        <select>
+                            <option>Select Concept Note</option>
+                            <option>CN-2024-001</option>
+                            <option>CN-2024-002</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Civil Works Cost (₹)</label>
+                        <input type="number" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Electrical Works Cost (₹)</label>
+                        <input type="number" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Equipment Cost (₹)</label>
+                        <input type="number" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Other Costs (₹)</label>
+                        <input type="number" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Detailed Description</label>
+                        <textarea placeholder="Enter detailed description of work"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="hideEstimateForm()">Cancel</button>
+                        <button type="button" class="btn-primary">Save as Draft</button>
+                        <button type="button" class="btn-primary">Submit for Review</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Roles & Authorization Section -->
+        <section id="roles" class="section">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">User Roles & Authorization</h2>
+                    <button class="btn-primary" onclick="showRoleForm()">Add New User</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Office</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>USR001</td>
+                            <td>Rajesh Kumar</td>
+                            <td>Field Officer</td>
+                            <td>Retail</td>
+                            <td>Noida DO</td>
+                            <td><span class="status approved">Active</span></td>
+                            <td>
+                                <button class="action-btn">Edit</button>
+                                <button class="action-btn">Deactivate</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR002</td>
+                            <td>Priya Sharma</td>
+                            <td>DRSHM</td>
+                            <td>Retail</td>
+                            <td>Bareilly DO</td>
+                            <td><span class="status approved">Active</span></td>
+                            <td>
+                                <button class="action-btn">Edit</button>
+                                <button class="action-btn">Deactivate</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR003</td>
+                            <td>Amit Singh</td>
+                            <td>Engineering Officer</td>
+                            <td>Engineering</td>
+                            <td>Agra DO</td>
+                            <td><span class="status approved">Active</span></td>
+                            <td>
+                                <button class="action-btn">Edit</button>
+                                <button class="action-btn">Deactivate</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR004</td>
+                            <td>Neha Gupta</td>
+                            <td>Finance Officer</td>
+                            <td>Finance</td>
+                            <td>UPSO II</td>
+                            <td><span class="status approved">Active</span></td>
+                            <td>
+                                <button class="action-btn">Edit</button>
+                                <button class="action-btn">Deactivate</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Role Form -->
+            <div id="roleForm" class="form-container">
+                <h2>Add New User</h2>
+                <form>
+                    <div class="form-group">
+                        <label>Employee ID</label>
+                        <input type="text" placeholder="Enter employee ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select>
+                            <option>Select Role</option>
+                            <option>Field Officer (FO)</option>
+                            <option>DRSHM</option>
+                            <option>Engineering Officer</option>
+                            <option>Finance Officer</option>
+                            <option>Engineering Team (State Office)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select>
+                            <option>Select Department</option>
+                            <option>Retail</option>
+                            <option>Engineering</option>
+                            <option>Finance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Office</label>
+                        <select>
+                            <option>Select Office</option>
+                            <option>UPSO II (State Office)</option>
+                            <option>Noida DO (1501)</option>
+                            <option>Bareilly DO (1502)</option>
+                            <option>Agra DO (1504)</option>
+                            <option>Dehradun DO (1505)</option>
+                            <option>Moradabad DO (1506)</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="hideRoleForm()">Cancel</button>
+                        <button type="button" class="btn-primary">Create User</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Show/Hide Sections
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Update nav active state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Form Display Functions
+        function showConceptNoteForm() {
+            document.getElementById('conceptNoteForm').style.display = 'block';
+        }
+
+        function hideConceptNoteForm() {
+            document.getElementById('conceptNoteForm').style.display = 'none';
+        }
+
+        function showEstimateForm() {
+            document.getElementById('estimateForm').style.display = 'block';
+        }
+
+        function hideEstimateForm() {
+            document.getElementById('estimateForm').style.display = 'none';
+        }
+
+        function showRoleForm() {
+            document.getElementById('roleForm').style.display = 'block';
+        }
+
+        function hideRoleForm() {
+            document.getElementById('roleForm').style.display = 'none';
+        }
+
+        // Logout Function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('Logged out successfully!');
+                // In a real application, this would redirect to login page
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const today = new Date();
+            const dateElements = document.querySelectorAll('td');
+            
+            // Simulate dynamic user data
+            const userRoles = {
+                'Field Officer': 'Noida DO (1501)',
+                'DRSHM': 'Bareilly DO (1502)',
+                'Engineering Officer': 'Agra DO (1504)',
+                'Finance Officer': 'UPSO II'
+            };
+        });
+    </script>
+</body>
+</html>
